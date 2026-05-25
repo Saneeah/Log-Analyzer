@@ -2,6 +2,7 @@ Requirements:
 
 Python 3.7 or higher
 Clone the repository:
+git clone https://github.com/Saneeah/log-analyzer.git
 cd log-analyzer
 
 To test using my own sample log:
