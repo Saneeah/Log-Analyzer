@@ -1,4 +1,18 @@
 How to run: Give the exact command(s) or steps to run your project on a fresh machine. If anything needs installing, list it.
+Requirements:
+- Python 3.7 or higher 
+
+1. Clone the repository:
+
+cd log-analyzer
+
+To test using my own sample log:
+2. Use Command: python scripts/generate_log.py
+   (This creates `scripts/sample.log`)
+   Or use your own log file
+
+3. Use Command: python analyze_log.py
+Paste the file path to sample log and press enter to run
 
 Stack choice: Why did you pick this stack/language/framework for this task? What would have been a worse choice and why?
 I decided to pick python because it is tailored for text processing and log parsing. The entire nature of this assignment was that the log data was unpredictable instead of always falling under one specific format hence python re module works effectively in this context through allowing me to scrub out dates, and symbols without writing hundreds of lines of code. A worse choice for this could've been C++ although it is faster, the standard regular expression library, regex is very slow and not to mention, managing all the dependencies for c++ takes alot of time.
@@ -13,6 +27,7 @@ if __name__ == "__main__":
     user_path = input("Enter the path to the log file: ").strip()
     analyze_log(user_path)
 and this indeed was what I was looking for hence that issue was fixed.
-Another issue that took alot of my time was I kept trying to apply brute force approach to generating a correct solution which only led me to programs that consisted of 700 to 800 lines of code that I didn't understand the logic behind and the output wasn't even close to what the assessment was looking for. This taught me a valuable lesson of breaking down the problem in bits and then asking Gemini to generate the solution to those smaller problems and then combine those solutions to solve a major problem. So I asked Gemini to write me a program that can 
+Another issue that took alot of my time was I kept trying to apply brute force approach to generating a correct solution which only led me to programs that consisted of 700 to 800 lines of code that I didn't understand the logic behind and the output wasn't even close to what the assessment was looking for. This taught me a valuable lesson of breaking down the problem in bits and then asking Gemini to generate the solution to those smaller problems and then combine those solutions to solve a major problem. So I asked Gemini to write me a program that can read the log files in it's standard format and after running it on test data, I then only added on top of the program that got the base requirement right; The new additions being that the program should not crash on malformed lines. 
 
 Honest gap: What's one thing in your submission that isn't good enough, and what would you do to fix it with another day?
+The error message normalization in `clean_error_message()` is too aggressive in some cases. After stripping timestamps and response times, it occasionally leaves behind meaningless fragments like "TZ" or "Z" from ISO timestamp suffixes, which appear in the error summary output as "TZ ERROR..." instead of just "ERROR...". This makes the error report slightly harder to read.
