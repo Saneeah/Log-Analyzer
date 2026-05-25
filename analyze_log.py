@@ -35,6 +35,23 @@ LOG_LINE_PATTERN = re.compile(
     """,
     re.VERBOSE
 )
+
+def normalize_to_ms(value, unit):
+    v = float(value)
+    if unit == "s":
+        return v * 1000
+    return v  
+ 
+ 
+def analyze_log(file_path):
+
+    if not os.path.exists(file_path):
+        print(f"Error: The file '{file_path}' does not exist.")
+        return
+ 
+    error_keyword_pattern = re.compile(
+        r"(error|exception|fail|critical|fatal)", re.IGNORECASE
+    )
  
 
 if __name__ == "__main__":
