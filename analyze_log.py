@@ -5,17 +5,14 @@ import re
  
  
 def clean_error_message(line):
-    
     text = re.sub(r"[\[\(\{\]\)\}]", " ", line)
     text = re.sub(
         r"\d{4}[-/]\d{2}[-/]\d{2}|\d{2}[-/][A-Za-z]{3}[-/]\d{4}", "", text
     )
     text = re.sub(r"\d{2}:\d{2}:\d{2}(\.\d+)?", "", text)
     text = re.sub(r"\b\d{10,13}\b", "", text)
- 
     text = re.sub(r"\b\d+(ms|s)\b", "", text)
     text = re.sub(r"\s-\s", " ", text)
- 
     text = re.sub(r"\s+", " ", text).strip()
     return text
  
@@ -23,28 +20,28 @@ def clean_error_message(line):
 LOG_LINE_PATTERN = re.compile(
     r"""
     (?:
-        \d{4}[-/]\d{2}[-/]\d{2}[T ]\d{2}:\d{2}:\d{2}Z?   
-      | \d{2}-[A-Za-z]{3}-\d{4}\s\d{2}:\d{2}:\d{2}        
-      | \d{10,13}                                           
+        \d{4}[-/]\d{2}[-/]\d{2}[T ]\d{2}:\d{2}:\d{2}Z?
+      | \d{2}-[A-Za-z]{3}-\d{4}\s\d{2}:\d{2}:\d{2}
+      | \d{10,13}
     )\s+
-    ([\d\.]+)\s+                                            
-    (GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\s+             
-    (/\S*)\s+                                               
-    (-|\d{3})\s+                                            
-    (\d+(?:\.\d+)?)(ms|s|)                                  
+    ([\d\.]+)\s+
+    (GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\s+
+    (/\S*)\s+
+    (-|\d{3})\s+
+    (\d+(?:\.\d+)?)(ms|s|)
     """,
     re.VERBOSE
 )
-
+ 
+ 
 def normalize_to_ms(value, unit):
     v = float(value)
     if unit == "s":
         return v * 1000
-    return v  
+    return v
  
  
 def analyze_log(file_path):
-
     if not os.path.exists(file_path):
         print(f"Error: The file '{file_path}' does not exist.")
         return
@@ -52,8 +49,8 @@ def analyze_log(file_path):
     error_keyword_pattern = re.compile(
         r"(error|exception|fail|critical|fatal)", re.IGNORECASE
     )
-
-total_lines = 0
+ 
+    total_lines = 0
     clean_errors_count = 0
  
     blank_lines_count = 0
@@ -63,7 +60,7 @@ total_lines = 0
     multiline_stack_traces_count = 0
  
     parsed_lines_count = 0
-    endpoint_times = {}  
+    endpoint_times = {}
  
     error_summary = Counter()
     anomaly_examples = []
@@ -78,6 +75,7 @@ total_lines = 0
             if not raw_line:
                 blank_lines_count += 1
                 continue
+ 
             match = LOG_LINE_PATTERN.search(raw_line)
             if match:
                 _ip, method, path, _status, time_val, time_unit = match.groups()
@@ -100,7 +98,6 @@ total_lines = 0
                     json_str = str(data).lower()
                     if error_keyword_pattern.search(json_str):
                         json_errors_count += 1
-                      
                         msg = data.get("message") or data.get("error") or raw_line
                         error_summary[f"[JSON] {msg}"] += 1
                 except json.JSONDecodeError:
@@ -120,30 +117,28 @@ total_lines = 0
  
             if error_keyword_pattern.search(raw_line):
                 clean_errors_count += 1
-
                 normalized_error = clean_error_message(raw_line)
- 
                 if normalized_error:
                     error_summary[normalized_error] += 1
                 else:
                     error_summary[raw_line] += 1
                 continue
-
+ 
             if len(raw_line) < 10 and not raw_line.isalnum():
                 malformed_or_partial_count += 1
                 if len(anomaly_examples) < 5:
                     anomaly_examples.append(
                         f"Line {line_num}: Partial/Fragmented text: '{raw_line}'"
                     )
-
-  print("=" * 60)
+ 
+    print("=" * 60)
     print("LOG ANALYSIS REPORT")
     print("=" * 60)
     print(f"Total Lines Accounted For:  {total_lines}")
     print(f"Successfully Parsed Lines:  {parsed_lines_count}")
     print(f"Total Error Patterns Found: {clean_errors_count + json_errors_count}")
     print("-" * 60)
-
+ 
     print("FORMAT ANOMALIES & STRUCTURE:")
     print(f"  • Blank Lines:             {blank_lines_count}")
     print(f"  • JSON Format Lines:       {json_lines_count} ({json_errors_count} errors inside)")
@@ -151,20 +146,20 @@ total_lines = 0
     print(f"  • Malformed/Partial Writes:{malformed_or_partial_count}")
     print("-" * 60)
  
-  if anomaly_examples:
+    if anomaly_examples:
         print("Sample Structural Anomalies:")
         for example in anomaly_examples:
             print(f"  [!] {example}")
         print("-" * 60)
-
+ 
     if endpoint_times:
         avg_times = {
             k: sum(v) / len(v)
             for k, v in endpoint_times.items()
-            if len(v) >= 3  
+            if len(v) >= 3
         }
         if avg_times:
-            print("TOP 10 SLOWEST ENDPOINTS (avg response time, min 3 hit):")
+            print("TOP 10 SLOWEST ENDPOINTS (avg response time, min 3 hits):")
             slowest = sorted(avg_times.items(), key=lambda x: -x[1])[:10]
             for (method, path), avg in slowest:
                 hits = len(endpoint_times[(method, path)])
@@ -179,7 +174,8 @@ total_lines = 0
             print(f" [{count}x] {error_text}")
  
     print("=" * 60)
-
+ 
+ 
 if __name__ == "__main__":
     user_path = input("Enter the path to the log file: ").strip()
     analyze_log(user_path)
