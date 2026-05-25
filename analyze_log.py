@@ -135,6 +135,21 @@ total_lines = 0
                     anomaly_examples.append(
                         f"Line {line_num}: Partial/Fragmented text: '{raw_line}'"
                     )
+
+  print("=" * 60)
+    print("LOG ANALYSIS REPORT")
+    print("=" * 60)
+    print(f"Total Lines Accounted For:  {total_lines}")
+    print(f"Successfully Parsed Lines:  {parsed_lines_count}")
+    print(f"Total Error Patterns Found: {clean_errors_count + json_errors_count}")
+    print("-" * 60)
+
+    print("FORMAT ANOMALIES & STRUCTURE:")
+    print(f"  • Blank Lines:             {blank_lines_count}")
+    print(f"  • JSON Format Lines:       {json_lines_count} ({json_errors_count} errors inside)")
+    print(f"  • Stack Trace Fragments:   {multiline_stack_traces_count}")
+    print(f"  • Malformed/Partial Writes:{malformed_or_partial_count}")
+    print("-" * 60)
  
 
 if __name__ == "__main__":
