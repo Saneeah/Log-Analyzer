@@ -1,15 +1,10 @@
 How to run: Give the exact command(s) or steps to run your project on a fresh machine. If anything needs installing, list it.
 Requirements:
-- Python 3.7 or higher 
+Python 3.7 or higher Clone the repository: git clone https://github.com/Saneeah/log-analyzer.git cd log-analyzer
 
-1. Clone the repository:
+To test using my own sample log: 2. Use Command: python script/generate_log.py (This creates scripts/sample.log) Or use your own log file
 
-cd log-analyzer
-
-To test using my own sample log:
-2. Use Command: python scripts/generate_log.py
-   (This creates `scripts/sample.log`)
-   Or use your own log file
+Use Command: python analyze_log.py Paste the file path to my sample log file: script/sample.log and press enter to run or the path to your sample log file.
 
 3. Use Command: python analyze_log.py
 Paste the file path to sample log and press enter to run
