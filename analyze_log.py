@@ -151,6 +151,34 @@ total_lines = 0
     print(f"  • Malformed/Partial Writes:{malformed_or_partial_count}")
     print("-" * 60)
  
+  if anomaly_examples:
+        print("Sample Structural Anomalies:")
+        for example in anomaly_examples:
+            print(f"  [!] {example}")
+        print("-" * 60)
+
+    if endpoint_times:
+        avg_times = {
+            k: sum(v) / len(v)
+            for k, v in endpoint_times.items()
+            if len(v) >= 3  
+        }
+        if avg_times:
+            print("TOP 10 SLOWEST ENDPOINTS (avg response time, min 3 hit):")
+            slowest = sorted(avg_times.items(), key=lambda x: -x[1])[:10]
+            for (method, path), avg in slowest:
+                hits = len(endpoint_times[(method, path)])
+                print(f"  {avg:>8.1f}ms  {method:<7} {path:<40} ({hits} hits)")
+            print("-" * 60)
+ 
+    if not error_summary:
+        print("No error patterns detected.")
+    else:
+        print("Top Normalized Error Patterns & Frequencies:")
+        for error_text, count in error_summary.most_common():
+            print(f" [{count}x] {error_text}")
+ 
+    print("=" * 60)
 
 if __name__ == "__main__":
     user_path = input("Enter the path to the log file: ").strip()
